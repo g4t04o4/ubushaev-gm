@@ -94,7 +94,7 @@ void GraphWidget::keyPressEvent(QKeyEvent *event)
         clearScreen();
         break;
     case Qt::Key_T:
-        exportToText();
+        exportToTXT();
         break;
     default:
         QGraphicsView::keyPressEvent(event);
@@ -266,7 +266,7 @@ void GraphWidget::fillGraph(int nodeCount, int edgeCount)
     }
 }
 
-void GraphWidget::exportToText()
+void GraphWidget::exportToTXT()
 {
     QString report;
     int nodeCnt = 1, edgeCnt = 1;

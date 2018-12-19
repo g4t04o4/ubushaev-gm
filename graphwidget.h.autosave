@@ -37,7 +37,7 @@ public slots:
 
     void pause();
     void exportToPNG();
-    void exportToText();
+    void exportToTXT();
 
     void clearScreen();
     void recreate();
