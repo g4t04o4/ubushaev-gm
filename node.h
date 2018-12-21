@@ -20,7 +20,7 @@ public:
      * GraphWidget *graphWidget - виджет, в который будет вестись отрисовка элемента.
      * (на самом деле, немного костыль, но пока ничего лучше не придумал)
      */
-    Node(GraphWidget *graphWidget);
+    Node(GraphWidget *graphWidget, unsigned int nodeID);
 
     /*
      * Метод добавления смежного к элементу ребра в его лист.
@@ -35,6 +35,8 @@ public:
      * Возвращает лист ссылок на рёбра.
      */
     QList<Edge *> getEdges() const;
+
+    unsigned int getID() const;
 
     /*
      * Тип итема. И геттер для него.
@@ -93,6 +95,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
+    unsigned int nodeID;
     QList<Edge *> edgeList; // Лист смежных узлу рёбер. Точнее, ссылок на них.
     QPointF newPos; // Актуальная позиция узла.
     GraphWidget *graph; // Виджет, в который ведётся отрисовка текущего узла.

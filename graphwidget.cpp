@@ -8,12 +8,9 @@
 #include <QKeyEvent>
 #include <QRandomGenerator>
 #include <QList>
-#include <QPixmap>
-#include <QFile>
-#include <QTextStream>
 
 GraphWidget::GraphWidget(QWidget *parent)
-    : QGraphicsView(parent), timerId(0), nodeCount(35),
+    : QGraphicsView(parent), lastNodeID(0), timerId(0), nodeCount(35),
       edgeCount(50), wsize(600), pauseflag(false)
 {
     expMaster = new Exporter();
@@ -28,25 +25,12 @@ GraphWidget::GraphWidget(QWidget *parent)
     setMinimumSize(wsize, wsize);
 
 
-    leaderNode = new Node(this);
+    leaderNode = new Node(this, lastNodeID++);
     scene->addItem(leaderNode);
+    nodeHeap.append(leaderNode);
     leaderNode->setPos(0, 0);
 
-
-    for (int i = 0; i < nodeCount; i++)
-    {
-        Node *newNode = new Node(this);
-        nodeHeap.insert(i, newNode);
-        scene->addItem(newNode);
-        newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
-                        -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
-    }
-
-    for (int i = 0; i < edgeCount; i++)
-    {
-        scene->addItem(new Edge(nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1)),
-                                nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1))));
-    }
+    fillGraph(nodeCount, edgeCount);
 }
 
 void GraphWidget::itemMoved()
@@ -80,20 +64,13 @@ void GraphWidget::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
 
-    QList<Node *> nodes;
-    foreach (QGraphicsItem *item, scene->items())
-    {
-        if (Node *node = qgraphicsitem_cast<Node *> (item))
-            nodes << node;
-    }
-
     if (!pauseflag)
     {
-        foreach (Node *node, nodes)
+        foreach (Node *node, nodeHeap)
             node->calculeteForces();
 
         bool itemsMoved = false;
-        foreach (Node *node, nodes)
+        foreach (Node *node, nodeHeap)
         {
             if (node->advancePosition())
                 itemsMoved = true;
@@ -204,14 +181,17 @@ void GraphWidget::clearScreen()
     {
         delete item;
     }
+    nodeHeap.clear();
+    edgeHeap.clear();
+    lastNodeID = 0;
 }
 
 void GraphWidget::fillGraph(int nodeCount, int edgeCount)
 {
     for (int i = 0; i < nodeCount; i++)
     {
-        Node *newNode = new Node(this);
-        nodeHeap.insert(i, newNode);
+        Node *newNode = new Node(this, lastNodeID++);
+        nodeHeap.append(newNode);
         scene->addItem(newNode);
         newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
                         -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
@@ -219,13 +199,53 @@ void GraphWidget::fillGraph(int nodeCount, int edgeCount)
 
     for (int i = 0; i < edgeCount; i++)
     {
-        scene->addItem(new Edge(nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1)),
-                                nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1))));
+        Edge *newEdge = new Edge(nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1)),
+                                 nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1)));
+        scene->addItem(newEdge);
+        edgeHeap.append(newEdge);
     }
 }
 
 void GraphWidget::exportToTXT(QString filename)
 {
-    QString report = "graph_test_data";
-    expMaster->exportToTXT(&report, filename);
+    /* JSON (TODO){
+     * edgeCnt: 42,
+     * nodeCnt: 42,
+     * nodes:
+     * [
+     * {
+     * src:1,
+     * dest:2
+     * },
+     * {
+     * src:1,
+     * dest:2
+     * }
+     * ]
+     * }
+     */
+    /*
+     * 42
+     * 41
+     * 1 2
+     * 2 1
+     *
+     */
+
+
+
+    QString report;
+    report.append(QString::number(nodeCount));
+    report.append("\r\n");
+    report.append(QString::number(edgeCount));
+    report.append("\r\n");
+    foreach (Edge *edge, edgeHeap)
+    {
+        report.append(QString::number(edge->getDestNode()->getID()));
+        report.append(" ");
+        report.append(QString::number(edge->getSourceNode()->getID()));
+        report.append("\r\n");
+    }
+
+    expMaster->exportToTXT(report, filename);
 }

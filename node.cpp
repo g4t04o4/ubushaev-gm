@@ -7,8 +7,8 @@
 #include <QPainter>
 #include <QStyleOption>
 
-Node::Node(GraphWidget *graphWidget)
-    : graph(graphWidget)
+Node::Node(GraphWidget *graphWidget, unsigned int ID)
+    : nodeID(ID), graph(graphWidget)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -25,6 +25,11 @@ void Node::addEdge(Edge *edge)
 QList<Edge *> Node::getEdges() const
 {
     return edgeList;
+}
+
+unsigned int Node::getID() const
+{
+    return nodeID;
 }
 
 void Node::calculeteForces()
@@ -77,9 +82,9 @@ void Node::calculeteForces()
     QRectF sceneRect = scene()->sceneRect();
     newPos = pos() + QPointF(xvel, yvel);
     newPos.setX(qMin(qMax(newPos.x(), sceneRect.left() + 10),
-                          sceneRect.right() - 10));
+                     sceneRect.right() - 10));
     newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + 10),
-                          sceneRect.bottom() - 10));
+                     sceneRect.bottom() - 10));
 }
 
 bool Node::advancePosition()
@@ -136,10 +141,10 @@ QVariant Node::itemChange(GraphicsItemChange change,
 {
     switch (change)
     {
-        case ItemPositionHasChanged:
-            foreach (Edge *edge, edgeList)
-                edge->adjust();
-            graph->itemMoved();
+    case ItemPositionHasChanged:
+        foreach (Edge *edge, edgeList)
+            edge->adjust();
+        graph->itemMoved();
         break;
     default:
         break;

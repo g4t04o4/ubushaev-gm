@@ -2,18 +2,13 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <QFileDialog>
-
-Exporter::Exporter()
-{
-}
 
 void Exporter::exportToPNG(QPixmap *inpPixmap, QString filename)
 {
     inpPixmap->save(filename);
 }
 
-void Exporter::exportToTXT(QString *inpReport, QString filename)
+void Exporter::exportToTXT(const QString& inpReport, QString filename)
 {
     QFile file(filename);
     file.resize(0);

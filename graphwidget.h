@@ -6,6 +6,7 @@
 #include <QGraphicsView>
 
 class Node;
+class Edge;
 class Exporter;
 
 /*
@@ -59,8 +60,10 @@ protected:
     void scaleView(qreal scaleFactor);
 
 private:
+    unsigned int lastNodeID;
     QGraphicsScene *scene = new QGraphicsScene(this);
     QVector<Node *> nodeHeap;
+    QVector<Edge *> edgeHeap;
     int timerId; //
     int nodeCount, edgeCount;
     Node *leaderNode; // Главный узел графа. Именно он двигается с помощью клавиатуры.

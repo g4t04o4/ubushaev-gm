@@ -24,14 +24,14 @@ public:
      *
      * Возвращает ссылку на элемент.
      */
-    Node *getSourceNode() const;
+    Node *getSourceNode() const {return source;}
 
     /*!
      * Геттер для получения конечного элемента.
      *
      * Возвращает ссылку на элемент.
      */
-    Node *getDestNode() const;
+    Node *getDestNode() const {return dest;}
 
     /*!
      * Метод регулировки для ребра. Следит, чтобы ребро отрисовывалось от текущего положения элементов.

@@ -15,16 +15,6 @@ Edge::Edge(Node *sourceNode, Node *destNode)
     adjust();
 }
 
-Node *Edge::getSourceNode() const
-{
-    return source;
-}
-
-Node *Edge::getDestNode() const
-{
-    return dest;
-}
-
 void Edge::adjust()
 {
     if (!source || !dest) return;
@@ -55,11 +45,11 @@ QRectF Edge::boundingRect() const
     qreal penWidth = 1;
     qreal extra = (penWidth + arrowSize) / 2.0;
 
-return QRectF(sourcePoint,
-              QSizeF(destPoint.x() - sourcePoint.x(),
-                     destPoint.y() - sourcePoint.y()))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
+    return QRectF(sourcePoint,
+                  QSizeF(destPoint.x() - sourcePoint.x(),
+                         destPoint.y() - sourcePoint.y()))
+            .normalized()
+            .adjusted(-extra, -extra, extra, extra);
 }
 
 void Edge::paint(QPainter *painter,
