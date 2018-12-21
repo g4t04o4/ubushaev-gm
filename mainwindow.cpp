@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QKeySequence>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -19,62 +20,62 @@ void MainWindow::createActions()
 {
 
     openAct = new QAction(tr("&Open"), this);
-    openAct->setShortcuts(QKeySequence::Open);
+    openAct->setShortcut(QKeySequence("Ctrl+O"));
     openAct->setStatusTip(tr("Open a file"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
     saveAct = new QAction(tr("&Save"), this);
-    saveAct->setShortcuts(QKeySequence::Save);
+    saveAct->setShortcut(QKeySequence("Ctrl+S"));
     saveAct->setStatusTip(tr("Save a file"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
     saveAsAct = new QAction(tr("Save &As"), this);
-    saveAsAct->setShortcuts(QKeySequence::SaveAs);
+    saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAsAct->setStatusTip(tr("Save a file as something"));
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
     exportAct = new QAction(tr("&Export"), this);
-    exportAct->setShortcuts(QKeySequence::Print);
+    exportAct->setShortcut(QKeySequence("Ctrl+E"));
     exportAct->setStatusTip(tr("Export a file"));
     connect(exportAct, SIGNAL(triggered()), this, SLOT(exportFile()));
 
     recreateAct = new QAction(tr("&Recreate"), this);
-    recreateAct->setShortcuts(QKeySequence::Refresh);
+    recreateAct->setShortcut(QKeySequence("Ctrl+R"));
     recreateAct->setStatusTip(tr("Recreate graph"));
     connect(recreateAct, SIGNAL(triggered()), this, SLOT(recreateGraph()));
 
     clearAct = new QAction(tr("&Clear"), this);
-    clearAct->setShortcuts(QKeySequence::New);
+    clearAct->setShortcut(QKeySequence("Ctrl+C"));
     clearAct->setStatusTip(tr("Clear graph"));
     connect(clearAct, SIGNAL(triggered()), this, SLOT(clearGraph()));
 
     shuffleAct = new QAction(tr("&Shuffle"), this);
-    //shuffleAct->setShortcuts(QKeySequence::);
+    shuffleAct->setShortcut(QKeySequence("Ctrl+Q"));
     shuffleAct->setStatusTip(tr("Shuffle graph"));
     connect(shuffleAct, SIGNAL(triggered()), this, SLOT(shuffleGraph()));
 
     fillAct = new QAction(tr("&Fill"), this);
-    //fillAct->setShortcuts(QKeySequence::);
+    fillAct->setShortcut(QKeySequence("Ctrl+F"));
     fillAct->setStatusTip(tr("Fill graph"));
     connect(fillAct, SIGNAL(triggered()), this, SLOT(fillGraph()));
 
     zoomInAct = new QAction(tr("&ZoomIn"), this);
-    zoomInAct->setShortcuts(QKeySequence::ZoomIn);
+    zoomInAct->setShortcut(QKeySequence("-"));
     zoomInAct->setStatusTip(tr("Zoom In"));
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
     zoomOutAct = new QAction(tr("&ZoomOut"), this);
-    zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
+    zoomOutAct->setShortcut(QKeySequence("+"));
     zoomOutAct->setStatusTip(tr("Zoom Out"));
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
     pauseAct = new QAction(tr("&Pause"), this);
-    //pauseAct->setShortcuts(QKeySequence::);
+    pauseAct->setShortcut(QKeySequence("P"));
     pauseAct->setStatusTip(tr("Pause"));
     connect(pauseAct, SIGNAL(triggered()), this, SLOT(pause()));
 
     aboutAct = new QAction(tr("&About"), this);
-    aboutAct->setShortcuts(QKeySequence::HelpContents);
+    aboutAct->setShortcut(QKeySequence("F1"));
     aboutAct->setStatusTip(tr("About"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 }
@@ -107,7 +108,8 @@ void MainWindow::createMenus()
 
 void MainWindow::openFile()
 {
-
+    QString fileContent = QFileDialog::getOpenFileName(this);
+    widget->openGraphFromTXT(fileContent);
 }
 
 void MainWindow::saveFile()

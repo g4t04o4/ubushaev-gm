@@ -24,6 +24,7 @@ public:
 
     void itemMoved();
 
+
 public slots:
     void fillGraph(int nodeCount, int edgeCount);
     /*
@@ -42,6 +43,7 @@ public slots:
     void pause();
     void exportToPNG(QString filename);
     void exportToTXT(QString filename);
+    void openGraphFromTXT(QString inpFile);
 
     void clearScreen();
     void recreate();
@@ -69,8 +71,6 @@ private:
     Node *leaderNode; // Главный узел графа. Именно он двигается с помощью клавиатуры.
     int wsize; //size of widget
     bool pauseflag;
-
-    Exporter *expMaster;
 };
 
 #endif // GRAPHWIDGET_H

@@ -2,18 +2,19 @@
 #include "edge.h"
 #include "node.h"
 #include "exporter.h"
+#include "importer.h"
 
 #include <math.h>
 
 #include <QKeyEvent>
 #include <QRandomGenerator>
 #include <QList>
+#include "edgedata.h"
 
 GraphWidget::GraphWidget(QWidget *parent)
     : QGraphicsView(parent), lastNodeID(0), timerId(0), nodeCount(35),
       edgeCount(50), wsize(600), pauseflag(false)
 {
-    expMaster = new Exporter();
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
     scene->setSceneRect(-wsize / 2, -wsize / 2, wsize, wsize);
     setScene(scene);
@@ -37,6 +38,37 @@ void GraphWidget::itemMoved()
 {
     if (!timerId)
         timerId = startTimer(1000 / 25);
+}
+
+void GraphWidget::openGraphFromTXT(QString inpFile)
+{
+    clearScreen();
+    Importer inpMaster;
+    QVector<EdgeData *>* edgeDataHeap = new QVector<EdgeData *>();
+    nodeCount = static_cast<int>(inpMaster.importFromTXT(*edgeDataHeap, inpFile));
+
+    for (int i = 0; i < nodeCount; i++)
+    {
+        Node *newNode = new Node(this, lastNodeID++);
+        nodeHeap.append(newNode);
+        scene->addItem(newNode);
+        newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
+                        -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
+    }
+    edgeCount = edgeDataHeap->count();
+    for (int i = 0; i < edgeCount; i++)
+    {
+        EdgeData data = *(edgeDataHeap->at(i));
+        Edge *newEdge = new Edge(nodeHeap.at(static_cast<int>(data.src)),
+                                 nodeHeap.at(static_cast<int>(data.dest)));
+        scene->addItem(newEdge);
+        edgeHeap.append(newEdge);
+    }
+    foreach (EdgeData *item, *edgeDataHeap)
+    {
+        delete item;
+    }
+    delete edgeDataHeap;
 }
 
 void GraphWidget::keyPressEvent(QKeyEvent *event)
@@ -166,7 +198,8 @@ void GraphWidget::pause()
 void GraphWidget::exportToPNG(QString filename)
 {
     QPixmap pixMap = this->grab();
-    expMaster->exportToPNG(&pixMap, filename);
+    Exporter expMaster;
+    expMaster.exportToPNG(&pixMap, filename);
 }
 
 void GraphWidget::recreate()
@@ -238,14 +271,13 @@ void GraphWidget::exportToTXT(QString filename)
     report.append(QString::number(nodeCount));
     report.append("\r\n");
     report.append(QString::number(edgeCount));
-    report.append("\r\n");
     foreach (Edge *edge, edgeHeap)
     {
+        report.append("\r\n");
         report.append(QString::number(edge->getDestNode()->getID()));
         report.append(" ");
-        report.append(QString::number(edge->getSourceNode()->getID()));
-        report.append("\r\n");
+        report.append(QString::number(edge->getSourceNode()->getID()));    
     }
-
-    expMaster->exportToTXT(report, filename);
+    Exporter expMaster;
+    expMaster.exportToTXT(report, filename);
 }
