@@ -1,4 +1,5 @@
 #include "graphwidget.h"
+#include "mainwindow.h"
 
 #include <QApplication>
 #include <QTime>
@@ -9,11 +10,7 @@ int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
 
-    GraphWidget *widget = new GraphWidget;
-
-
-    QMainWindow mainWindow;
-    mainWindow.setCentralWidget(widget);
+    MainWindow mainWindow;
 
     mainWindow.show();
     return app.exec();

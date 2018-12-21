@@ -1,9 +1,12 @@
 #ifndef GRAPHWIDGET_H
 #define GRAPHWIDGET_H
 
+
+
 #include <QGraphicsView>
 
 class Node;
+class Exporter;
 
 /*
  * Виджет на основе QTшного QGraphicsView, содержащий граф.
@@ -36,8 +39,8 @@ public slots:
     void setEdgeCount(int N) {edgeCount = N;}
 
     void pause();
-    void exportToPNG();
-    void exportToTXT();
+    void exportToPNG(QString filename);
+    void exportToTXT(QString filename);
 
     void clearScreen();
     void recreate();
@@ -64,6 +67,7 @@ private:
     int wsize; //size of widget
     bool pauseflag;
 
+    Exporter *expMaster;
 };
 
 #endif // GRAPHWIDGET_H

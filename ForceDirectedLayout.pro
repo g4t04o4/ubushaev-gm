@@ -22,12 +22,16 @@ SOURCES += \
     main.cpp \
     edge.cpp \
     node.cpp \
-    graphwidget.cpp
+    graphwidget.cpp \
+    exporter.cpp \
+    mainwindow.cpp
 
 HEADERS += \
     edge.h \
     node.h \
-    graphwidget.h
+    graphwidget.h \
+    exporter.h \
+    mainwindow.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

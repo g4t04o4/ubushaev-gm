@@ -1,6 +1,7 @@
 #include "graphwidget.h"
 #include "edge.h"
 #include "node.h"
+#include "exporter.h"
 
 #include <math.h>
 
@@ -15,7 +16,7 @@ GraphWidget::GraphWidget(QWidget *parent)
     : QGraphicsView(parent), timerId(0), nodeCount(35),
       edgeCount(50), wsize(600), pauseflag(false)
 {
-
+    expMaster = new Exporter();
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
     scene->setSceneRect(-wsize / 2, -wsize / 2, wsize, wsize);
     setScene(scene);
@@ -25,8 +26,6 @@ GraphWidget::GraphWidget(QWidget *parent)
     setTransformationAnchor(AnchorUnderMouse);
     scale(qreal(0.8), qreal(0.8));
     setMinimumSize(wsize, wsize);
-    setWindowTitle(tr("ForceDirectedLayout"));
-
 
 
     leaderNode = new Node(this);
@@ -72,30 +71,6 @@ void GraphWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Right:
         leaderNode->moveBy(20, 0);
         break;
-    case Qt::Key_Plus:
-        zoomIn();
-        break;
-    case Qt::Key_Minus:
-        zoomOut();
-        break;
-    case Qt::Key_Space:
-        shuffle();
-        break;
-    case Qt::Key_P:
-        pause();
-        break;
-    case Qt::Key_S:
-        exportToPNG();
-       break;
-    case Qt::Key_R:
-        recreate();
-        break;
-    case Qt::Key_C:
-        clearScreen();
-        break;
-    case Qt::Key_T:
-        exportToTXT();
-        break;
     default:
         QGraphicsView::keyPressEvent(event);
     }
@@ -114,21 +89,21 @@ void GraphWidget::timerEvent(QTimerEvent *event)
 
     if (!pauseflag)
     {
-    foreach (Node *node, nodes)
-        node->calculeteForces();
+        foreach (Node *node, nodes)
+            node->calculeteForces();
 
-    bool itemsMoved = false;
-    foreach (Node *node, nodes)
-    {
-        if (node->advancePosition())
-            itemsMoved = true;
-    }
+        bool itemsMoved = false;
+        foreach (Node *node, nodes)
+        {
+            if (node->advancePosition())
+                itemsMoved = true;
+        }
 
-    if (!itemsMoved)
-    {
-        killTimer(timerId);
-        timerId = 0;
-    }
+        if (!itemsMoved)
+        {
+            killTimer(timerId);
+            timerId = 0;
+        }
     }
 }
 
@@ -173,23 +148,6 @@ void GraphWidget::drawBackground(QPainter *painter,
     painter->fillRect(rect.intersected(sceneRect), gradient);
     painter->setBrush(Qt::NoBrush);
     painter->drawRect(sceneRect);
-
-    /*
-     * Кайнда туториал.
-     */
-
-    QRectF textRect(sceneRect.left() + 4, sceneRect.top() + 4,
-                    sceneRect.width() - 4, sceneRect.height() - 4);
-    QString message(tr("shuffle - Space, zoomIn - +, zoomOut - -, pause - P, exportToPNG - S, exportToText - T, clearScreen - C, recreate - R"));
-
-    QFont font = painter->font();
-    font.setBold(true);
-    font.setPointSize(14);
-    painter->setFont(font);
-    painter->setPen(Qt::lightGray);
-    painter->drawText(textRect.translated(2, 2), message);
-    painter->setPen(Qt::black);
-    painter->drawText(textRect, message);
 }
 
 void GraphWidget::scaleView(qreal scaleFactor)
@@ -228,10 +186,10 @@ void GraphWidget::pause()
     pauseflag = !pauseflag;
 }
 
-void GraphWidget::exportToPNG()
+void GraphWidget::exportToPNG(QString filename)
 {
     QPixmap pixMap = this->grab();
-    pixMap.save("export_report.png");
+    expMaster->exportToPNG(&pixMap, filename);
 }
 
 void GraphWidget::recreate()
@@ -266,38 +224,8 @@ void GraphWidget::fillGraph(int nodeCount, int edgeCount)
     }
 }
 
-void GraphWidget::exportToTXT()
+void GraphWidget::exportToTXT(QString filename)
 {
-    QString report;
-    int nodeCnt = 1, edgeCnt = 1;
-
-    foreach (QGraphicsItem *item, scene->items())
-    {
-
-        if (Node *node = qgraphicsitem_cast<Node *> (item))
-        {
-            report.append("node_");
-            report.append(QString::number(nodeCnt));
-            report.append("\r\n");
-            nodeCnt++;
-        }
-        else
-        {
-            /*
-             * Пока покатит. Потом заменить.
-             */
-            report.append("edge_");
-            report.append(QString::number(edgeCnt));
-            report.append("\r\n");
-            edgeCnt++;
-        }
-    }
-
-    QFile file("export_report.txt");
-    file.resize(0);
-    if (file.open(QIODevice::ReadWrite))
-    {
-        QTextStream stream(&file);
-        stream << report << endl;
-    }
+    QString report = "graph_test_data";
+    expMaster->exportToTXT(&report, filename);
 }
