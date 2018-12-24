@@ -8,97 +8,85 @@ class Edge;
 class GraphWidget;
 class QGraphicsSceneMouseEvent;
 
-/*
- * Элемент графа. Тоже на основе итема из QT.
+/*!
+ * \brief Класс, реализующий элемент графа. Наследуется от QGraphicsItem.
  */
 class Node : public QGraphicsItem
 {
 public:
-    /*
-     * Конструктор элемента графа.
-     *
-     * GraphWidget *graphWidget - виджет, в который будет вестись отрисовка элемента.
-     * (на самом деле, немного костыль, но пока ничего лучше не придумал)
+
+    /*!
+     * \brief Конструктор элемента графа.
+     * \param graphWidget - виджет, в который будет вестись отрисовка элемента.
+     * \param nodeID - уникальный номер элемента.
      */
     Node(GraphWidget *graphWidget, unsigned int nodeID);
 
-    /*
-     * Метод добавления смежного к элементу ребра в его лист.
-     *
-     * Edge *edge - ссылка на ребро.
+    /*!
+     * \brief Метод добавления смежного к элементу ребра в его лист.
+     * \param edge - ссылка на ребро.
      */
     void addEdge(Edge *edge);
 
-    /*
-     * Геттер на смежные элементу рёбра.
-     *
-     * Возвращает лист ссылок на рёбра.
+    /*!
+     * \brief Метод получения смежных элементу рёбер.
+     * \return возвращает лист ссылок на рёбра.
      */
     QList<Edge *> getEdges() const;
 
+    /*!
+     * \brief Метод для получения уникального номера элемента.
+     * \return возвращает уникальный номер элемента.
+     */
     unsigned int getID() const;
 
-    /*
-     * Тип итема. И геттер для него.
-     */
-    enum {Type = UserType + 1};
-    int type() const override {return Type;}
-
-    /*
-     * Метод для рассчёта сил, действующих на узел.
+    /*!
+     * \brief Метод для рассчёта сил, действующих на узлы.
      */
     void calculeteForces();
 
-    /*
-     * Метод изменяет старую позицию узла на текущую.
+    /*!
+     * \brief Метод обновляет позицию элемента.
      */
     bool advancePosition();
 
-    /*
-     *
-     */
     QRectF boundingRect() const override;
-
     QPainterPath shape() const override;
 
-    /*
-     * Метод для отрисовки элемента на основе метода QPainter'а.
-     *
-     * QPainter *painter,
-     * const QStyleOptionGraphicsItem *option - необходимые параметры для отрисовки
-     * QWidget *widget - виджет, в который будет вестись отрисовка
+    /*!
+     * \brief Метод для отрисовки элемента на основе метода QPainter'а.
      */
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
 
 protected:
-    /*
-     *
-     */
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value) override;
 
-    /*
-     * Обработчики событий для узла.
-     */
-
-    /*
-     * Обработчик нажатия на узел (левой клавишей мыши).
-     * Т.н. "зажатое" состояние узла.
-     */
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    /*
-     * Обработчик "отпускания" узла.
-     * "Свободное" его состояние.
-     */
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
+    /*!
+     * \brief Уникальный номер элемента.
+     */
     unsigned int nodeID;
-    QList<Edge *> edgeList; // Лист смежных узлу рёбер. Точнее, ссылок на них.
-    QPointF newPos; // Актуальная позиция узла.
-    GraphWidget *graph; // Виджет, в который ведётся отрисовка текущего узла.
+
+    /*!
+     * \brief Лист ссылок на смежные узлу рёбра.
+     */
+    QList<Edge *> edgeList;
+
+    /*!
+     * \brief Актуальная позиция узла.
+     */
+    QPointF newPos;
+
+    /*!
+     * \brief Виджет, в который отрисовывается элемент.
+     */
+    GraphWidget *graph;
 
 };
 

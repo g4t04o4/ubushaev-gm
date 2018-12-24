@@ -166,8 +166,9 @@ void MainWindow::pause()
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, tr("FM. Read It."),
-                       tr("shuffle - Space, zoomIn - +, zoomOut - -, "
-                          "pause - P, exportToPNG - S, exportToText - T, "
-                          "clearScreen - C, recreate - R"));
+    QMessageBox::about(this, tr("About"),
+                       tr("Программа даёт вам уникальную возможность потыкать кривой граф!\r\n"
+                          "Более того, вы можете сохранить этот ужас в PNG формате, распечатать и вложить в кошелёк, "
+                          "чтобы хвастаться на корпоративах перед коллегами!\r\n"
+                          "Будьте уверены, они страшно обзавидуются!"));
 }

@@ -6,67 +6,62 @@
 class Node;
 
 /*!
- * \brief Ребро графа. Сделано на основе QTшного QGraphicsItem.
+ * \brief Класс, реализующий ребро графа. Наследуется от QGraphicsItem.
  */
-
 class Edge : public QGraphicsItem
 {
 public:
-    /**
+    /*!
      * \brief Конструктор ребра на основе двух элементов.
-     * \param sourceNode ссылка на начальный элемент
-     * \param destNode ссылка на конечный элемент
+     * \param sourceNode - начальный элемент ребра.
+     * \param destNode - конечный элемент ребра.
      */
     Edge(Node *sourceNode, Node *destNode);
 
     /*!
-     * Геттер для получения начального элемента.
-     *
-     * Возвращает ссылку на элемент.
+     * \brief Геттер для получения начального элемента.
+     * \return начальный элемент ребра.
      */
     Node *getSourceNode() const {return source;}
 
     /*!
-     * Геттер для получения конечного элемента.
-     *
-     * Возвращает ссылку на элемент.
+     * \brief Геттер для получения конечного элемента.
+     * \return конечный элемент ребра.
      */
     Node *getDestNode() const {return dest;}
 
     /*!
-     * Метод регулировки для ребра. Следит, чтобы ребро отрисовывалось от текущего положения элементов.
+     * \brief Метод, отвечающий за корректный рассчёт и отрисовку рёбер от текущего положения элементов.
      */
     void adjust();
 
-    /*
-     * Тип итема (ребро или элемент?) и геттер для его получения.
-     */
-    enum {Type = UserType + 2};
-    int type() const override { return Type; }
-
-protected:
-    /*
-     *
-     */
+protected:    
     QRectF boundingRect() const override;
 
-    /*
-     * Метод для отрисовки ребра на основе метода QPainter'а.
-     *
-     * QPainter *painter,
-     * const QStyleOptionGraphicsItem *option - необходимые параметры для отрисовки
-     * QWidget *widget - виджет, в который будет вестись отрисовка
+    /*!
+     * \brief Метод для отрисовки ребра на основе метода QPainter'а.
      */
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
 
 private:
-    Node *source, * dest; // Ребро хранит в себе ссылки на его элементы.
-
-    QPointF sourcePoint; // Координаты начального элемента ребра.
-    QPointF destPoint; // Координаты конечного элемента ребра.
-    qreal arrowSize; // Размер указателя стрелки при отрисовке.
+    /*!
+     * \brief Ребро хранит в себе ссылки на его элементы.
+     */
+    Node *source, * dest;
+    /*!
+     * \brief Координаты начального элемента ребра.
+     */
+    QPointF sourcePoint;
+    /*!
+     * \brief Координаты конечного элемента ребра.
+     */
+    QPointF destPoint;
+    /*!
+     * \brief Размер указателя стрелки при отрисовке.
+     */
+    qreal arrowSize;
 };
 
 #endif // EDGE_H

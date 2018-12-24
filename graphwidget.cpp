@@ -28,7 +28,7 @@ GraphWidget::GraphWidget(QWidget *parent)
 
     leaderNode = new Node(this, lastNodeID++);
     scene->addItem(leaderNode);
-    nodeHeap.append(leaderNode);
+    nodeVector.append(leaderNode);
     leaderNode->setPos(0, 0);
 
     fillGraph(nodeCount, edgeCount);
@@ -44,12 +44,12 @@ void GraphWidget::openGraphFromTXT(QString inputFilePath)
 {
     clearScreen();
     Importer inpMaster{};
-    auto edges = inpMaster.importFromTXT(inputFilePath);
+    auto edges = inpMaster.importFromTXT(inputFilePath, nodeCount);
 
     for (int i = 0; i < nodeCount; i++)
     {
         Node *newNode = new Node(this, lastNodeID++);
-        nodeHeap.append(newNode);
+        nodeVector.append(newNode);
         scene->addItem(newNode);
         newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
                         -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
@@ -57,10 +57,10 @@ void GraphWidget::openGraphFromTXT(QString inputFilePath)
     edgeCount = static_cast<int>(edges.size());
     for (auto& edgeData: edges)
     {
-        Edge *newEdge = new Edge(nodeHeap.at(static_cast<int>(edgeData.src)),
-                                 nodeHeap.at(static_cast<int>(edgeData.dest)));
+        auto* newEdge = new Edge(nodeVector.at(static_cast<int>(edgeData.src)),
+                                 nodeVector.at(static_cast<int>(edgeData.dest)));
         scene->addItem(newEdge);
-        edgeHeap.append(newEdge);
+        edgeVector.append(newEdge);
     }
 }
 
@@ -91,11 +91,11 @@ void GraphWidget::timerEvent(QTimerEvent *event)
 
     if (!pauseflag)
     {
-        foreach (Node *node, nodeHeap)
+        foreach (Node *node, nodeVector)
             node->calculeteForces();
 
         bool itemsMoved = false;
-        foreach (Node *node, nodeHeap)
+        foreach (Node *node, nodeVector)
         {
             if (node->advancePosition())
                 itemsMoved = true;
@@ -204,8 +204,8 @@ void GraphWidget::recreate()
 void GraphWidget::clearScreen()
 {
     scene->clear();
-    nodeHeap.clear();
-    edgeHeap.clear();
+    nodeVector.clear();
+    edgeVector.clear();
     lastNodeID = 0;
 }
 
@@ -214,7 +214,7 @@ void GraphWidget::fillGraph(int nodeCount, int edgeCount)
     for (int i = 0; i < nodeCount; i++)
     {
         Node *newNode = new Node(this, lastNodeID++);
-        nodeHeap.append(newNode);
+        nodeVector.append(newNode);
         scene->addItem(newNode);
         newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
                         -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
@@ -222,10 +222,10 @@ void GraphWidget::fillGraph(int nodeCount, int edgeCount)
 
     for (int i = 0; i < edgeCount; i++)
     {
-        Edge *newEdge = new Edge(nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1)),
-                                 nodeHeap.at(QRandomGenerator::global()->bounded(nodeCount-1)));
+        Edge *newEdge = new Edge(nodeVector.at(QRandomGenerator::global()->bounded(nodeCount-1)),
+                                 nodeVector.at(QRandomGenerator::global()->bounded(nodeCount-1)));
         scene->addItem(newEdge);
-        edgeHeap.append(newEdge);
+        edgeVector.append(newEdge);
     }
 }
 
@@ -261,7 +261,7 @@ void GraphWidget::exportToTXT(QString filename)
     report.append(QString::number(nodeCount));
     report.append("\r\n");
     report.append(QString::number(edgeCount));
-    foreach (Edge *edge, edgeHeap)
+    foreach (Edge *edge, edgeVector)
     {
         report.append("\r\n");
         report.append(QString::number(edge->getDestNode()->getID()));
