@@ -12,6 +12,7 @@ class Exporter;
 /*
  * Виджет на основе QTшного QGraphicsView, содержащий граф.
  */
+
 class GraphWidget : public QGraphicsView
 {
     Q_OBJECT

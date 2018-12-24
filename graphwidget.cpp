@@ -44,8 +44,8 @@ void GraphWidget::openGraphFromTXT(QString inpFile)
 {
     clearScreen();
     Importer inpMaster;
-    QVector<EdgeData *>* edgeDataHeap = new QVector<EdgeData *>();
-    nodeCount = static_cast<int>(inpMaster.importFromTXT(*edgeDataHeap, inpFile));
+    QVector<EdgeData *> edgeDataHeap = QVector<EdgeData *>();
+    nodeCount = static_cast<int>(inpMaster.importFromTXT(edgeDataHeap, inpFile));
 
     for (int i = 0; i < nodeCount; i++)
     {
@@ -55,20 +55,20 @@ void GraphWidget::openGraphFromTXT(QString inpFile)
         newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
                         -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
     }
-    edgeCount = edgeDataHeap->count();
+    edgeCount = edgeDataHeap.count();
     for (int i = 0; i < edgeCount; i++)
     {
-        EdgeData data = *(edgeDataHeap->at(i));
+        EdgeData data = *(edgeDataHeap.at(i));
         Edge *newEdge = new Edge(nodeHeap.at(static_cast<int>(data.src)),
                                  nodeHeap.at(static_cast<int>(data.dest)));
         scene->addItem(newEdge);
         edgeHeap.append(newEdge);
     }
-    foreach (EdgeData *item, *edgeDataHeap)
+
+    for (auto* item: edgeDataHeap)
     {
         delete item;
     }
-    delete edgeDataHeap;
 }
 
 void GraphWidget::keyPressEvent(QKeyEvent *event)
@@ -276,7 +276,7 @@ void GraphWidget::exportToTXT(QString filename)
         report.append("\r\n");
         report.append(QString::number(edge->getDestNode()->getID()));
         report.append(" ");
-        report.append(QString::number(edge->getSourceNode()->getID()));    
+        report.append(QString::number(edge->getSourceNode()->getID()));
     }
     Exporter expMaster;
     expMaster.exportToTXT(report, filename);
