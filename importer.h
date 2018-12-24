@@ -7,7 +7,7 @@
 class Importer
 {
 public:
-    unsigned int importFromTXT(QVector<EdgeData *>& edgeHeap, const QString& inpFile);
+    int importFromTXT(QVector<EdgeData *>& edgeHeap, const QString& inpFile);
 };
 
 #endif // IMPORTER_H

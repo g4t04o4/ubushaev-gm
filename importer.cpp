@@ -2,18 +2,18 @@
 #include <QFile>
 #include <QTextStream>
 
-unsigned int Importer::importFromTXT(QVector<EdgeData *>& edgeHeap,const QString& inpFile)
+int Importer::importFromTXT(QVector<EdgeData *>& edgeHeap,const QString& inpFile)
 {
     QFile inputFile(inpFile);
-    unsigned int nodeCount = 0,
+    int nodeCount = 0,
                  edgeCount = 0;
     if (inputFile.open(QIODevice::ReadOnly))
     {
        QTextStream in(&inputFile);
        QString line = in.readLine();
-       nodeCount = line.toUInt();
+       nodeCount = line.toInt();
        line = in.readLine();
-       edgeCount = line.toUInt();
+       edgeCount = line.toInt();
        while (!in.atEnd())
        {
           line = in.readLine();
