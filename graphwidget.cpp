@@ -40,12 +40,11 @@ void GraphWidget::itemMoved()
         timerId = startTimer(1000 / 25);
 }
 
-void GraphWidget::openGraphFromTXT(QString inpFile)
+void GraphWidget::openGraphFromTXT(QString inputFilePath)
 {
     clearScreen();
-    Importer inpMaster;
-    QVector<EdgeData *> edgeDataHeap = QVector<EdgeData *>();
-    nodeCount = static_cast<int>(inpMaster.importFromTXT(edgeDataHeap, inpFile));
+    Importer inpMaster{};
+    auto edges = inpMaster.importFromTXT(inputFilePath);
 
     for (int i = 0; i < nodeCount; i++)
     {
@@ -55,19 +54,13 @@ void GraphWidget::openGraphFromTXT(QString inpFile)
         newNode->setPos(-wsize / 2 + QRandomGenerator::global()->bounded(wsize),
                         -wsize / 2 + QRandomGenerator::global()->bounded(wsize));
     }
-    edgeCount = edgeDataHeap.count();
-    for (int i = 0; i < edgeCount; i++)
+    edgeCount = static_cast<int>(edges.size());
+    for (auto& edgeData: edges)
     {
-        EdgeData data = *(edgeDataHeap.at(i));
-        Edge *newEdge = new Edge(nodeHeap.at(static_cast<int>(data.src)),
-                                 nodeHeap.at(static_cast<int>(data.dest)));
+        Edge *newEdge = new Edge(nodeHeap.at(static_cast<int>(edgeData.src)),
+                                 nodeHeap.at(static_cast<int>(edgeData.dest)));
         scene->addItem(newEdge);
         edgeHeap.append(newEdge);
-    }
-
-    for (auto* item: edgeDataHeap)
-    {
-        delete item;
     }
 }
 
@@ -210,10 +203,7 @@ void GraphWidget::recreate()
 
 void GraphWidget::clearScreen()
 {
-    foreach (QGraphicsItem *item, scene->items())
-    {
-        delete item;
-    }
+    scene->clear();
     nodeHeap.clear();
     edgeHeap.clear();
     lastNodeID = 0;
