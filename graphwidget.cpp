@@ -11,6 +11,11 @@
 #include <QList>
 #include "edgedata.h"
 
+/*!
+ * Test comment 4 pull request
+ *
+ */
+
 GraphWidget::GraphWidget(QWidget *parent)
     : QGraphicsView(parent), lastNodeID(0), timerId(0), nodeCount(35),
       edgeCount(50), wsize(600), pauseflag(false)
